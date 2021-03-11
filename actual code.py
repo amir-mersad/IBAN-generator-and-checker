@@ -1,32 +1,40 @@
 import requests
 import codecs
 from bs4 import BeautifulSoup
-URL = "https://identinator.com/?for_country=de"
-req = requests.get(URL)
-decoded_data=req.text.encode().decode('utf-8-sig') 
-html = decoded_data
-"""  This only finds one of the attributes
-number = BeautifulSoup(html, 'html.parser')
-final = number.find('input')['name'], ':', soup.find('input')['value']
- This finds all of them  """
-soup = BeautifulSoup(html, 'html.parser')
-values = [each.attrs['value'] for each in soup.find_all('input')]
-iban1 = values[0]
-iban2 = values[1]
-print(iban1,iban2)
-
-post_url = "https://www.ibancalculator.com/iban_validieren.html"
-post_data= {"tx_valIBAN_pi1[iban]":iban1,
+counter = 0
+while counter < 5:
+    URL = "https://identinator.com/?for_country=de"
+    req = requests.get(URL)
+    decoded_data=req.text.encode().decode('utf-8-sig') 
+    html = decoded_data
+    soup = BeautifulSoup(html, 'html.parser')
+    values = [each.attrs['value'] for each in soup.find_all('input')]
+    iban1 = values[0]
+    iban2 = values[1]
+    print(iban1,iban2)
+    post_url = "https://www.ibancalculator.com/iban_validieren.html"
+    def check(iban):
+        post_data= {"tx_valIBAN_pi1[iban]":iban,
             "tx_valIBAN_pi1[fi]":"fi",
             "no_cache":1,
             "Action":"validate IBAN"}
-post_req = requests.post(post_url, post_data)
-with open('data.txt', "w", encoding="utf-8") as f:
-    f.write(post_req.text)
-response = post_req.text
-
-""" print(post_req)
-print(response)
-print(1)
-print(1)
-print(1) """
+        post_req = requests.post(post_url, post_data)
+        response = post_req.text
+        correct= "The account number contains a valid checksum"
+        correctresponse = "<b>SEPA Credit Transfer is supported.</b></p><p><b>SEPA Direct Debit is not supported.</b></p><p><b>B2B is not supported.</b></p><p><b>SEPA Instant Credit Transfer is not supported."
+        if response.find(correct) != -1:
+            if response.find(correctresponse) != -1:
+                with open('match.txt', "a", encoding="utf-8") as incorrecttxt:
+                    incorrecttxt.write(iban1 + "\n")
+                print("It is correct (YES)")
+            else:
+                with open('no.txt', "a", encoding="utf-8") as ibantxt:
+                    ibantxt.write(iban1 + "\n")
+                print("The IBAN didn't have the correct attributes! (NO)")
+        else:
+            print("incorrect IBAN!")
+            with open('incorrect.txt', "a", encoding="utf-8") as notfound:
+                notfound.write(iban1 + "\n")
+    counter = counter + 1
+    check(iban1)
+    check(iban2)
