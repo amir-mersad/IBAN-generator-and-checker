@@ -1,8 +1,9 @@
 import requests
 import codecs
 from bs4 import BeautifulSoup
+found_num = 0
 counter = 0
-while counter < 5:
+while found_num < 5 and counter < 5:
     URL = "https://identinator.com/?for_country=de"
     req = requests.get(URL)
     decoded_data=req.text.encode().decode('utf-8-sig') 
@@ -27,6 +28,7 @@ while counter < 5:
                 with open('match.txt', "a", encoding="utf-8") as incorrecttxt:
                     incorrecttxt.write(iban1 + "\n")
                 print("It is correct (YES)")
+                found_num += 1
             else:
                 with open('no.txt', "a", encoding="utf-8") as ibantxt:
                     ibantxt.write(iban1 + "\n")
@@ -35,6 +37,6 @@ while counter < 5:
             print("incorrect IBAN!")
             with open('incorrect.txt', "a", encoding="utf-8") as notfound:
                 notfound.write(iban1 + "\n")
-    counter = counter + 1
+    counter += 1
     check(iban1)
     check(iban2)
