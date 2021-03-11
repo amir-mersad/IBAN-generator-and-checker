@@ -3,7 +3,7 @@ import codecs
 from bs4 import BeautifulSoup
 found_num = 0
 counter = 0
-while found_num < 5 and counter < 5:
+while found_num < 2 and counter < 100:
     URL = "https://identinator.com/?for_country=de"
     req = requests.get(URL)
     decoded_data=req.text.encode().decode('utf-8-sig') 
