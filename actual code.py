@@ -21,8 +21,9 @@ while found_num < 2 and counter < 100:
             "Action":"validate IBAN"}
         post_req = requests.post(post_url, post_data)
         response = post_req.text
+        global found_num
         correct= "The account number contains a valid checksum"
-        correctresponse = "<b>SEPA Credit Transfer is supported.</b></p><p><b>SEPA Direct Debit is not supported.</b></p><p><b>B2B is not supported.</b></p><p><b>SEPA Instant Credit Transfer is not supported."
+        correctresponse = "<b>SEPA Credit Transfer is supported.</b></p><p><b>SEPA Direct Debit is supported.</b></p><p><b>B2B is supported.</b></p><p><b>SEPA Instant Credit Transfer is supported."
         if response.find(correct) != -1:
             if response.find(correctresponse) != -1:
                 with open('match.txt', "a", encoding="utf-8") as incorrecttxt:
